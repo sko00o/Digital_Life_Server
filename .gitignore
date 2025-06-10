@@ -1,0 +1,11 @@
+venv/
+tmp/
+*.log
+__pycache__
+
+ASR/resources/models/
+SentimentEngine/models/
+TTS/models/
+TTS/vits/monotonic_align/monotonic_align/
+*.pyd
+.env
