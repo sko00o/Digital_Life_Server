@@ -5,7 +5,7 @@ def get_tune(character, model):
         filename = character+'35.txt'
         logging.info('chatGPT prompt: %s' % filename)
         return open('GPT/prompts/' + filename, 'r', encoding='utf-8').read()
-    if '4' in model:
+    else:
         filename = character+'4.txt'
         logging.info('chatGPT prompt: %s' % filename)
         return open('GPT/prompts/' + filename, 'r', encoding='utf-8').read()
