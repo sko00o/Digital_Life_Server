@@ -5,6 +5,7 @@ import time
 import GPT.tune as tune
 
 from openai import OpenAI
+import httpx
 
 
 class GPTService():
@@ -17,7 +18,20 @@ class GPTService():
 
         self.brainwash = args.brainwash
 
-        self.client = OpenAI(api_key=args.APIKey, base_url=args.APIBase)
+        # Configure proxy if provided
+        http_client = None
+        if hasattr(args, 'proxy') and args.proxy:
+            logging.info(f'Using proxy: {args.proxy}')
+            http_client = httpx.Client(
+                proxies=args.proxy,
+                timeout=httpx.Timeout(30.0, connect=10.0)
+            )
+
+        self.client = OpenAI(
+            api_key=args.APIKey,
+            base_url=args.APIBase,
+            http_client=http_client
+        )
         self.model = args.model
         logging.info('OpenAI API initialized.')
 
