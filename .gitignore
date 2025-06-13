@@ -8,4 +8,5 @@ SentimentEngine/models/
 TTS/models/
 TTS/vits/monotonic_align/monotonic_align/
 *.pyd
+*.so
 .env
