@@ -52,6 +52,8 @@ def parse_args():
     parser.add_argument("--character", type=str, nargs='?', required=True)
     parser.add_argument("--ip", type=str, nargs='?', required=False)
     parser.add_argument("--brainwash", type=str2bool, nargs='?', required=False)
+    parser.add_argument("--host", type=str, nargs='?', required=False, default=socket.gethostbyname(socket.gethostname()))
+    parser.add_argument("--port", type=int, nargs='?', required=False, default=38438)
     return parser.parse_args()
 
 
@@ -61,8 +63,8 @@ class Server():
         self.addr = None
         self.conn = None
         logging.info('Initializing Server...')
-        self.host = socket.gethostbyname(socket.gethostname())
-        self.port = 38438
+        self.host = args.host
+        self.port = args.port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 10240000)
         self.s.bind((self.host, self.port))

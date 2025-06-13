@@ -1,12 +1,23 @@
 #!/bin/bash
-SCRIPT_NAME=SocketServer.py
-PROXY=
-STREAM=False
-CHARACTER=paimon
 
-APIBASE=
-APIKEY=xxx
-MODEL=chatgpt-3.5
+# load from .env
+source .env || {
+    echo "Error: .env file not found"
+    exit 1
+}
 
-source venv/bin/activate
-python $SCRIPT_NAME --stream $STREAM --character $CHARACTER --model $MODEL --proxy $PROXY --APIKey $APIKEY --APIBase $APIBASE
+# activate venv
+source venv/bin/activate || {
+    echo "Error: venv not found"
+    exit 1
+}
+
+python SocketServer.py \
+    --host $HOST \
+    --port $PORT \
+    --stream $STREAM \
+    --character $CHARACTER \
+    --model ${MODEL:-"chatgpt-3.5"} \
+    --proxy $PROXY \
+    --APIKey $APIKEY \
+    --APIBase $APIBASE
