@@ -14,7 +14,7 @@ import GPT.tune
 from utils.FlushingFileHandler import FlushingFileHandler
 from ASR import ASRService
 from GPT import GPTService
-from TTS import TTService
+from TTS import IndexTTService
 from SentimentEngine import SentimentEngine
 
 console_logger = logging.getLogger()
@@ -87,7 +87,8 @@ class Server():
         self.chat_gpt = GPTService.GPTService(args)
 
         # TTS
-        self.tts = TTService.TTService(*self.char_name[args.character])
+        # self.tts = TTService.TTService(*self.char_name[args.character])
+        self.tts = IndexTTService.IndexTTService()
 
         # Sentiment Engine
         self.sentiment = SentimentEngine.SentimentEngine('SentimentEngine/models/paimon_sentiment.onnx')
@@ -132,7 +133,7 @@ class Server():
         self.conn.sendall(b'stream_finished')
 
     def send_voice(self, resp_text, senti_or = None):
-        self.tts.read_save(resp_text, self.tmp_proc_file, self.tts.hps.data.sampling_rate)
+        self.tts.read_save(resp_text, self.tmp_proc_file)
         with open(self.tmp_proc_file, 'rb') as f:
             senddata = f.read()
         if senti_or:

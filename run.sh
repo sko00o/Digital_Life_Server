@@ -7,10 +7,12 @@ source .env || {
 }
 
 # activate venv
-source venv/bin/activate || {
-    echo "Error: venv not found"
-    exit 1
-}
+if [ -d venv ]; then
+    source venv/bin/activate || {
+        echo "Error: venv not found"
+        exit 1
+    }
+fi
 
 python SocketServer.py \
     --host $HOST \
