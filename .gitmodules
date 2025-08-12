@@ -1,3 +1,6 @@
 [submodule ".\\TTS\\vits"]
 	path = TTS/vits
 	url = https://github.com/zixiiu/vits
+[submodule "TTS/index-tts"]
+	path = TTS/index-tts
+	url = https://github.com/index-tts/index-tts.git

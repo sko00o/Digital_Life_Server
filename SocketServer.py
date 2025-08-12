@@ -8,14 +8,13 @@ from logging.handlers import TimedRotatingFileHandler
 
 import librosa
 import requests
-import revChatGPT
 import soundfile
 
 import GPT.tune
 from utils.FlushingFileHandler import FlushingFileHandler
 from ASR import ASRService
 from GPT import GPTService
-from TTS import TTService
+from TTS import IndexTTService
 from SentimentEngine import SentimentEngine
 
 console_logger = logging.getLogger()
@@ -41,8 +40,8 @@ def str2bool(v):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--chatVer", type=int, nargs='?', required=True)
     parser.add_argument("--APIKey", type=str, nargs='?', required=False)
+    parser.add_argument("--APIBase", type=str, nargs='?', required=False)
     parser.add_argument("--email", type=str, nargs='?', required=False)
     parser.add_argument("--password", type=str, nargs='?', required=False)
     parser.add_argument("--accessToken", type=str, nargs='?', required=False)
@@ -53,6 +52,8 @@ def parse_args():
     parser.add_argument("--character", type=str, nargs='?', required=True)
     parser.add_argument("--ip", type=str, nargs='?', required=False)
     parser.add_argument("--brainwash", type=str2bool, nargs='?', required=False)
+    parser.add_argument("--host", type=str, nargs='?', required=False, default=socket.gethostbyname(socket.gethostname()))
+    parser.add_argument("--port", type=int, nargs='?', required=False, default=38438)
     return parser.parse_args()
 
 
@@ -62,11 +63,12 @@ class Server():
         self.addr = None
         self.conn = None
         logging.info('Initializing Server...')
-        self.host = socket.gethostbyname(socket.gethostname())
-        self.port = 38438
+        self.host = args.host
+        self.port = args.port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 10240000)
         self.s.bind((self.host, self.port))
+        os.makedirs('tmp', exist_ok=True)
         self.tmp_recv_file = 'tmp/server_received.wav'
         self.tmp_proc_file = 'tmp/server_processed.wav'
 
@@ -85,7 +87,8 @@ class Server():
         self.chat_gpt = GPTService.GPTService(args)
 
         # TTS
-        self.tts = TTService.TTService(*self.char_name[args.character])
+        # self.tts = TTService.TTService(*self.char_name[args.character])
+        self.tts = IndexTTService.IndexTTService()
 
         # Sentiment Engine
         self.sentiment = SentimentEngine.SentimentEngine('SentimentEngine/models/paimon_sentiment.onnx')
@@ -115,16 +118,6 @@ class Server():
                         resp_text = self.chat_gpt.ask(ask_text)
                         self.send_voice(resp_text)
                         self.notice_stream_end()
-                except revChatGPT.typings.APIConnectionError as e:
-                    logging.error(e.__str__())
-                    logging.info('API rate limit exceeded, sending: %s' % GPT.tune.exceed_reply)
-                    self.send_voice(GPT.tune.exceed_reply, 2)
-                    self.notice_stream_end()
-                except revChatGPT.typings.Error as e:
-                    logging.error(e.__str__())
-                    logging.info('Something wrong with OPENAI, sending: %s' % GPT.tune.error_reply)
-                    self.send_voice(GPT.tune.error_reply, 1)
-                    self.notice_stream_end()
                 except requests.exceptions.RequestException as e:
                     logging.error(e.__str__())
                     logging.info('Something wrong with internet, sending: %s' % GPT.tune.error_reply)
@@ -140,7 +133,7 @@ class Server():
         self.conn.sendall(b'stream_finished')
 
     def send_voice(self, resp_text, senti_or = None):
-        self.tts.read_save(resp_text, self.tmp_proc_file, self.tts.hps.data.sampling_rate)
+        self.tts.read_save(resp_text, self.tmp_proc_file)
         with open(self.tmp_proc_file, 'rb') as f:
             senddata = f.read()
         if senti_or:

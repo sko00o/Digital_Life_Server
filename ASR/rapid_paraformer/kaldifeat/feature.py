@@ -104,6 +104,8 @@ def extract_window(waveform, blackman_coeff, dither, window_size, window_shift,
                    snip_edges, window_type, dtype):
     num_samples = len(waveform)
     num_frames = func_num_frames(num_samples, window_size, window_shift, snip_edges)
+    if num_frames == 0:
+        return np.empty((0, window_size), dtype=dtype), np.empty((0,), dtype=dtype)
     num_samples_ = (num_frames - 1) * window_shift + window_size
     if snip_edges:
         waveform = waveform[:num_samples_]
