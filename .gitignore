@@ -1,4 +1,5 @@
 venv/
+.venv/
 tmp/
 *.log
 __pycache__

@@ -85,6 +85,19 @@ tqdm>=4.65.0
 PyYAML>=6.0
 huggingface-hub>=0.21.0
 fsspec==2023.5.0
+omegaconf
+matplotlib>=3.8.2
+sentencepiece
+accelerate>=0.25.0
+ffmpeg-python>=0.2.0
+g2p-en==2.1.0
+keras==2.9.0
+pandas==2.1.3
+opencv-python>=4.9.0.80
+vocos>=0.1.0
+accelerate>=0.25.0
+tensorboard>=2.9.1
+WeTextProcessing; platform_machine != "Darwin"
 
 # Additional dependencies for IndexTTS source compilation
 setuptools>=65.0.0

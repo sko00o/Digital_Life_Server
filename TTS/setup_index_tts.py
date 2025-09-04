@@ -138,7 +138,7 @@ def download_models():
     try:
         # Import and run download function
         sys.path.append("TTS")
-        from download_index_tts import download_index_tts_models
+        from IndexTTService import download_index_tts_models
 
         if download_index_tts_models("TTS/models/index_tts"):
             logger.info("Models downloaded successfully")

@@ -31,6 +31,6 @@ class SentimentEngine():
 
 if __name__ == '__main__':
     t = '不许你这样说我，打你'
-    s = SentimentEngine('SentimentEngine/paimon_sentiment.onnx')
+    s = SentimentEngine('SentimentEngine/models/paimon_sentiment.onnx')
     r = s.infer(t)
     print(r)

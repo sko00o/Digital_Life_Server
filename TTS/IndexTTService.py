@@ -12,12 +12,13 @@ os.environ["PYTORCH_JIT"] = "0"
 
 # Import IndexTTS
 try:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.append(current_dir)
+    sys.path.append(os.path.join(current_dir, "index-tts"))
     from indextts.infer import IndexTTS
     logger = logging.getLogger(__name__)
-except ImportError:
-    print("IndexTTS not found. Please ensure either:")
-    print("1. Submodule is initialized: git submodule update --init --recursive")
-    print("2. Or install via pip: pip install indextts")
+except ImportError as e:
+    print(f"IndexTTS not found. Please ensure either: {e}")
     sys.exit(1)
 
 logging.getLogger().setLevel(logging.INFO)
